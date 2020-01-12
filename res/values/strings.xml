@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, MainActivity!</string>
+    <string name="homepage">http://xdxn.xyz</string>
     <string name="app_name">Asktao属性自定义</string>
+    <string name="db_title">数据库配置</string>
+    <string name="db_host">主机</string>
+    <string name="db_port">端口</string>
+    <string name="db_name">数据库</string>
+    <string name="db_user">用户名</string>
+    <string name="db_pass">登录密码</string>
+    <string name="db_connect">连接数据库</string>
+    <string name="db_empty">清空配置</string>
+    <string name="item_about">关于</string>
+    <string name="item_about_title">使用须知</string>
+    <string name="item_about_msg">1、本工具仅供测试使用，请勿擅自修改传播；\n2、使用本工具而造成的不良后果与作者无关；\n3、编写本工具纯属个人兴趣，无毒无后门；\n4、不要试图吐槽我的UI，纯爪机编码，你行你来\n5、默认同意上述内容，不同意请自行卸载！\n本着共同学习交流进步的理念，工具完全免费\n若有疑问或BUG可 @小打小闹 QQ:201956703\n龟速更新中，分享备份Q群:930243445\n编辑于：2020.01.12 23:05</string>
+    <string name="string_00">操作成功！</string>
+    <string name="string_01">正在连接数据库...</string>
+    <string name="string_02">数据库连接失败！</string>
+    <string name="string_03">网络连接状态异常！</string>
 
 </resources>
