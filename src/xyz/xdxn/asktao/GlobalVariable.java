@@ -1,30 +1,155 @@
 package xyz.xdxn.asktao;
 /*
-* 全局变量类
-*/
+ * 全局变量类
+ */
 import android.app.*;
 import android.content.*;
+import android.support.v4.content.*;
+import android.support.v4.view.*;
+import com.mysql.jdbc.*;
+import java.sql.*;
+import org.json.*;
+
+import com.mysql.jdbc.Connection;
+import java.sql.Statement;
 
 public class GlobalVariable extends Application
 {
-    private String b;
+    //数据库连接
+    private Connection conn = null;
+    private Statement stmt = null;
+    private boolean status = false;
+    //data解析
+    private JSONObject Jdata = null;
+    private String[] allowArr;
     private SharedPreferences share;
-    
-    public SharedPreferences getShare()
-    {
-        return this.share;
-    }
-    
-    public void setB(String c)
-    {
-        this.b = c;
-    }
+    //广播类
+    private LocalBroadcastManager localBroadcastManager;
+    //控件类
+    private ViewPager viewPage;
     
     @Override
     public void onCreate()
     {
         super.onCreate();
-        share = getSharedPreferences("dbconfig", MODE_PRIVATE);
-        
+        this.share = getSharedPreferences("dbconfig", MODE_PRIVATE);
+        this.localBroadcastManager = this.localBroadcastManager.getInstance(this);
     }
+
+    public void sendBroadMsg(int code, String type, String data, boolean falg)
+    {// 发送本地广播 
+     // code {1,2,3,4,2,6,7} 对应 {"发现", "数据库配置", "用户列表", "人物属性", "发送宠物", "发送装备","开发工具" }
+        Intent intent = new Intent(getString(R.string.homepage));
+        intent.putExtra("code",code);
+        intent.putExtra("type",type);//类型-> 提示：MSG，数据：DATA
+        intent.putExtra("data",data);
+        intent.putExtra("falg",falg);
+        this.localBroadcastManager.sendBroadcast(intent);
+    }
+    
+    public LocalBroadcastManager getLBM()
+    {// 本地广播
+        return this.localBroadcastManager;
+    }
+    
+    public void setViewPager(ViewPager vp)
+    {
+        this.viewPage = vp;
+    }
+    
+    public ViewPager getViewPager()
+    {
+        return this.viewPage;
+    }
+    
+    public SharedPreferences getShare()
+    {// 获取配置属性
+        return this.share;
+    }
+
+    public void setAllowArr(String[] arr)
+    {// 设置允许功能
+        this.allowArr = arr;
+    }
+
+    public String[] getAllowArr()
+    {// 获取允许功能
+        return this.allowArr;
+    }
+
+    public boolean ConnectionMysql(final String host, final String port, final String dbname, final String user, final String pass)
+    {// 数据库连接（线程中操作网络）
+        if (!this.status)
+        {
+            new Thread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            String dburl = "jdbc:mysql://" + host + ":" + port + "/" + dbname;
+                            Class.forName("com.mysql.jdbc.Driver");
+                            conn = (Connection) DriverManager.getConnection(dburl, user, pass);
+                            status = true;
+                            share.edit().putString("db_host", host).commit();
+                            share.edit().putString("db_port", port).commit();
+                            share.edit().putString("db_name", dbname).commit();
+                            share.edit().putString("db_user", user).commit();
+                            share.edit().putString("db_pass", pass).commit();
+                            share.edit().apply();
+                            sendBroadMsg(2,"MSG","连接成功！",status);
+                        }
+                        catch (Exception e)
+                        {
+                            status = false;
+                            sendBroadMsg(2,"MSG",e.toString(),status);
+                        }
+                    }
+                }).start();
+        }
+        return this.status;
+    }
+
+    public Connection getConn() throws Exception
+    {// 获取数据库连接信息
+        return this.conn;
+    }
+
+    public Statement getStmt() throws Exception
+    {// 数据库操作接口
+        if (this.conn != null)
+            return this.stmt = this.conn.createStatement();
+        return null;
+    }
+
+    public boolean getMysqlStatus()
+    {// 数据库连接状态
+        return this.status;
+    }
+
+    public void closeMysql()
+    {// 关闭数据库
+        try
+        {
+            if (this.stmt != null)
+                this.stmt.close();
+            if (this.conn != null)
+                this.conn.close();
+        }
+        catch (Exception e)
+        {}
+        this.status = false;
+        sendBroadMsg(2,"MSG",getString(R.string.db_status_error),status);
+    }
+
+    public void setJsonData(String json) throws Exception
+    {// 设置人物属性json
+        this.Jdata = new JSONObject(json);
+    }
+
+    public JSONObject getJsonData()
+    {// 获取人物属性json
+        return this.Jdata;
+    }
+    
 }

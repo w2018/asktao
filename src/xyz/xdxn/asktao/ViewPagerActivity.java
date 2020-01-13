@@ -17,7 +17,7 @@ import android.support.v4.app.FragmentManager;
 public class ViewPagerActivity extends FragmentActivity implements
 OnPageChangeListener, TabListener {
 
-    public SharedPreferences share;
+    private GlobalVariable global;
     private ViewPager mPager;
     private ArrayList<Fragment> mfragmentList;
     // 标题列表
@@ -27,13 +27,15 @@ OnPageChangeListener, TabListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_pager);
-        share = getSharedPreferences("dbconfig", MODE_PRIVATE);
+        global = (GlobalVariable)this.getApplicationContext();
         initViewPager();
     }
 
     private void initViewPager() {
         mPager = (ViewPager) findViewById(R.id.viewpager);
-
+        
+        global.setViewPager(mPager);
+        
         mfragmentList = new ArrayList<Fragment>();
         mfragmentList.add(new Fragment1());
         mfragmentList.add(new Fragment2());
@@ -141,6 +143,7 @@ OnPageChangeListener, TabListener {
         // TODO Auto-generated method stub
 
     }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -162,6 +165,15 @@ OnPageChangeListener, TabListener {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    @Override
+    public void finish() {
+        /**
+         * 父类已经实现了改方法，无需执行此句 super.finish();
+         * 设置该activity永不过期，即不执行onDestroy()
+         */
+        moveTaskToBack(true);
     }
     
 }

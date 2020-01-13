@@ -18,8 +18,7 @@ public class Fragment1 extends Fragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View rootView = inflater.inflate(R.layout.fragment1, container, false);
-        url = getString(R.string.homepage);
-
+        url = _url = getString(R.string.homepage);
         NetBroadcastReceiver receiver = new NetBroadcastReceiver();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         getActivity().registerReceiver(receiver, filter);
@@ -50,7 +49,6 @@ public class Fragment1 extends Fragment
                 {
                     super.onReceivedError(view, errorCode, description, failingUrl);
                     view.loadUrl("file:///android_asset/error.html");
-                    //页面访问失败，可选择加载本地页面
                 }
             });
         webshow.setWebChromeClient(new WebChromeClient());
@@ -131,7 +129,7 @@ public class Fragment1 extends Fragment
             else
             {
                 //WIFI连接或者移动网络连接
-                webshow.loadUrl(_url);
+                Fragment1.this.webshow.loadUrl(_url);
             }
         }
     }
