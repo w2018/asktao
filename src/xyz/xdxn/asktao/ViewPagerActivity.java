@@ -1,14 +1,15 @@
 package xyz.xdxn.asktao;
 
-import android.*;
 import android.app.*;
 import android.app.ActionBar.*;
+import android.content.*;
 import android.os.*;
 import android.support.v4.app.*;
 import android.support.v4.view.*;
 import android.support.v4.view.ViewPager.*;
 import android.view.*;
 import java.util.*;
+
 import android.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 public class ViewPagerActivity extends FragmentActivity implements
 OnPageChangeListener, TabListener {
 
+    public SharedPreferences share;
     private ViewPager mPager;
     private ArrayList<Fragment> mfragmentList;
     // 标题列表
@@ -25,6 +27,7 @@ OnPageChangeListener, TabListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_pager);
+        share = getSharedPreferences("dbconfig", MODE_PRIVATE);
         initViewPager();
     }
 
@@ -37,6 +40,8 @@ OnPageChangeListener, TabListener {
         mfragmentList.add(new Fragment3());
         mfragmentList.add(new Fragment4());
         mfragmentList.add(new Fragment5());
+        mfragmentList.add(new Fragment6());
+        mfragmentList.add(new Fragment7());
         
         mPager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager(),mfragmentList));
         mPager.setCurrentItem(0);   
@@ -46,7 +51,7 @@ OnPageChangeListener, TabListener {
         getActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.title_bar_shape));//标题栏图标
         // 初始化TAB属性
         String[] tabName = null;
-        String[] temTabName = {"发现", "数据库配置", "人物属性", "发送宠物", "发送装备" };
+        String[] temTabName = {"发现", "数据库配置", "用户列表", "人物属性", "发送宠物", "发送装备","开发工具" };
         tabName = temTabName;
 
         for (int i = 0; i < tabName.length; i++) {

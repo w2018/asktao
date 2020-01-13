@@ -19,7 +19,7 @@ public class Fragment3 extends Fragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		 View rootView = inflater.inflate(R.layout.fragment3, container, false);//关联布局文件
+		 View rootView = inflater.inflate(R.layout.fragment_all, container, false);//关联布局文件
 		return rootView;
 	}
 
