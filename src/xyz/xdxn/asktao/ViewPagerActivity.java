@@ -31,6 +31,7 @@ OnPageChangeListener, TabListener {
         global = (GlobalVariable)this.getApplicationContext();
         loadingDialog = new LoadingDialog(this, getString(R.string.loading), R.drawable.ic_dialog_loading);
         global.setLoadingDialog(loadingDialog);
+        global.setContext(this);
         initViewPager();
     }
 

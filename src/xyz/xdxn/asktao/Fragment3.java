@@ -13,7 +13,8 @@ import android.support.v4.app.Fragment;
 
 public class Fragment3 extends Fragment
 {
-    private TextView tv1;
+    private ListView listview;
+    List<Map<String, Object>> list_data;
     private GlobalVariable global;
     private IntentFilter intentFilter;
     private boolean falg = false;
@@ -33,13 +34,25 @@ public class Fragment3 extends Fragment
                         Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
                         break;
                     case "DATA"://数据处理
-                        tv1.setText(data);
+
+                        /*
+                         List<Map<String, Object>> list_data = new ArrayList<Map<String, Object>>();
+                         Map<String, Object> item = new HashMap<String, Object>();
+                         item.put("image", R.drawable.ic_launcher);
+                         item.put("user", "6");
+                         item.put("regtime",  "2020");
+                         list_data.add(item);
+                         */
+                        SimpleAdapter simpleAdapter = new SimpleAdapter(global.getContext(), list_data, R.layout.listview_main_item, new String[] { "image", "user", "regtime", "account_id"}, new int[] { R.id.image, R.id.user, R.id.regtime, R.id.account_id});
+                        listview.setAdapter(simpleAdapter);
+                        global.getLoadingDialog().dismiss();
                         break;
                     case "EXEC"://执行
+                        listview.setAdapter(null);
+                        global.getLoadingDialog().show();
                         getUserList();
                         break;
                 }
-                global.getLoadingDialog().dismiss();
             }
         }
 	};	
@@ -47,20 +60,12 @@ public class Fragment3 extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View rootView = inflater.inflate(R.layout.fragment_all, container, false);
+        View rootView = inflater.inflate(R.layout.fragment3, container, false);
         global = (GlobalVariable)getActivity().getApplicationContext();
         intentFilter = new IntentFilter();
         intentFilter.addAction(getString(R.string.homepage));
         global.getLBM().registerReceiver(mbr, intentFilter);
-
-        tv1 = (TextView)rootView.findViewById(R.id.tv1);
-        tv1.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View p1)
-                { 
-
-                }
-            });
+        listview = (ListView)rootView.findViewById(R.id.listView);
 		return rootView;
 	}
 
@@ -68,22 +73,36 @@ public class Fragment3 extends Fragment
     {// 获取用户列表
         if (falg = global.getMysqlStatus())
         {
-            global.getLoadingDialog().show();
             new Thread(new Runnable() {
                     @Override
                     public void run()
                     {
                         try
                         {
-                            String sql = "SELECT * FROM `accounts` LIMIT 0, 1000";
+                            String sql = "SELECT * FROM `characters` LIMIT 0, 5000";
                             //String sql = "SELECT * FROM `accounts` WHERE `name` = '" + account + "' LIMIT 0, 1000";
                             ResultSet rs = global.getStmt().executeQuery(sql);
-                            HashMap<String,Integer> map = new HashMap<String,Integer>();
+                            list_data = new ArrayList<Map<String, Object>>();
                             while (rs.next())
                             {
-                                map.put(rs.getString("name"), rs.getInt("id"));
+                                HashMap<String,Object> map = new HashMap<String,Object>();
+                                String update_time = rs.getString("update_time");
+                                if (Calendar.getInstance().getTimeInMillis() - global.getTimeLong(update_time) < 1000)
+                                {
+                                    map.put("image", R.drawable.online); //在线
+                                }
+                                else
+                                {
+                                    map.put("image", R.drawable.offline); //离线
+                                }
+                                map.put("user", rs.getString("name")); //游戏名称
+                                map.put("regtime", rs.getString("add_time"));//创建时间
+                                map.put("account_id", rs.getInt("account_id"));//用户ID
+                                map.put("data", rs.getString("data"));//人物json数据
+                                list_data.add(map);
                             }
-                            global.sendBroadMsg(3, "DATA", map.toString(), false);
+                            global.sendBroadMsg(3, "DATA", null, false);
+
                         }
                         catch (Exception e)
                         {

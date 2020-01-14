@@ -6,13 +6,11 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<TextView
-		android:id="@+id/tv1"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:text="未授权"
-		android:gravity="center"
-		android:textSize="60sp"/>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
 
 </LinearLayout>
 

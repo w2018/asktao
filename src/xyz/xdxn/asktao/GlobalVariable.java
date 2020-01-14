@@ -2,15 +2,17 @@ package xyz.xdxn.asktao;
 /*
  * 全局变量类
  */
+import android.app.*;
 import android.content.*;
 import android.support.v4.content.*;
 import android.support.v4.view.*;
 import com.mysql.jdbc.*;
 import java.sql.*;
+import java.text.*;
 import org.json.*;
+
 import com.mysql.jdbc.Connection;
 import java.sql.Statement;
-import android.app.*;
 
 public class GlobalVariable extends Application
 {
@@ -27,6 +29,8 @@ public class GlobalVariable extends Application
     //控件类
     private ViewPager viewPage;
     private LoadingDialog loadingDialog;
+    //应用类
+    private Context context;
 
     @Override
     public void onCreate()
@@ -36,11 +40,33 @@ public class GlobalVariable extends Application
         this.localBroadcastManager = this.localBroadcastManager.getInstance(this);
     }
 
+    public void setContext(Context con)
+    {
+        this.context = con;
+    }
+    
+    public Context getContext()
+    {
+        return this.context;
+    }
+    
+    public Long getTimeLong(String time) 
+    {// 转换成时间戳
+        Long longTime = ;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            longTime = sdf.parse(time).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return longTime;
+    }
+    
     public void setLoadingDialog(LoadingDialog ld)
     {// 设置LoadingDialog
         this.loadingDialog = ld;
     }
-    
+
     public LoadingDialog getLoadingDialog()
     {// LoadingDialog
         return this.loadingDialog;
