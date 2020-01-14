@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 public class ViewPagerActivity extends FragmentActivity implements
 OnPageChangeListener, TabListener {
 
+    private LoadingDialog loadingDialog;
     private GlobalVariable global;
     private ViewPager mPager;
     private ArrayList<Fragment> mfragmentList;
@@ -28,12 +29,13 @@ OnPageChangeListener, TabListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_pager);
         global = (GlobalVariable)this.getApplicationContext();
+        loadingDialog = new LoadingDialog(this, getString(R.string.loading), R.drawable.ic_dialog_loading);
+        global.setLoadingDialog(loadingDialog);
         initViewPager();
     }
 
     private void initViewPager() {
         mPager = (ViewPager) findViewById(R.id.viewpager);
-        
         global.setViewPager(mPager);
         
         mfragmentList = new ArrayList<Fragment>();
@@ -46,7 +48,7 @@ OnPageChangeListener, TabListener {
         mfragmentList.add(new Fragment7());
         
         mPager.setAdapter(new MyViewPagerAdapter(getSupportFragmentManager(),mfragmentList));
-        mPager.setCurrentItem(0);   
+        mPager.setCurrentItem(1);   
         mPager.setOnPageChangeListener(this);
 
         getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);

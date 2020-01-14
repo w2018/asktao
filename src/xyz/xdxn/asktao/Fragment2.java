@@ -27,12 +27,13 @@ public class Fragment2 extends Fragment
             falg = global.getMysqlStatus();
             if (code == 2)
             {
+                global.getLoadingDialog().dismiss();
                 switch (type)
                 {
                     case "MSG":
                         Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
                         break;
-                    case "MSG":
+                    case "DATA":
 
                         break;
                 }
@@ -40,11 +41,14 @@ public class Fragment2 extends Fragment
                 connectStatus.setText(falg ? getString(R.string.db_status_success) : getString(R.string.db_status_error));
                 connectStatus.setTextColor(falg ? Color.BLUE : Color.RED);
                 if (falg)
+                {
                     global.getViewPager().setCurrentItem(2); //连接成功跳转到 用户列表页
+                    global.sendBroadMsg(3, "EXEC", null, false);
+                }
             }
         }
 	};	
-    
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -80,6 +84,7 @@ public class Fragment2 extends Fragment
                     {
                         falg = global.ConnectionMysql(edit_db_host.getText().toString().trim(), edit_db_port.getText().toString().trim(), edit_db_name.getText().toString().trim(), edit_db_user.getText().toString().trim(), edit_db_pass.getText().toString().trim());
                         connectStatus.setText(getString(R.string.db_status_connect));
+                        global.getLoadingDialog().show();
                     }
                 }
             });

@@ -2,16 +2,15 @@ package xyz.xdxn.asktao;
 /*
  * 全局变量类
  */
-import android.app.*;
 import android.content.*;
 import android.support.v4.content.*;
 import android.support.v4.view.*;
 import com.mysql.jdbc.*;
 import java.sql.*;
 import org.json.*;
-
 import com.mysql.jdbc.Connection;
 import java.sql.Statement;
+import android.app.*;
 
 public class GlobalVariable extends Application
 {
@@ -27,7 +26,8 @@ public class GlobalVariable extends Application
     private LocalBroadcastManager localBroadcastManager;
     //控件类
     private ViewPager viewPage;
-    
+    private LoadingDialog loadingDialog;
+
     @Override
     public void onCreate()
     {
@@ -36,32 +36,42 @@ public class GlobalVariable extends Application
         this.localBroadcastManager = this.localBroadcastManager.getInstance(this);
     }
 
-    public void sendBroadMsg(int code, String type, String data, boolean falg)
-    {// 发送本地广播 
-     // code {1,2,3,4,2,6,7} 对应 {"发现", "数据库配置", "用户列表", "人物属性", "发送宠物", "发送装备","开发工具" }
-        Intent intent = new Intent(getString(R.string.homepage));
-        intent.putExtra("code",code);
-        intent.putExtra("type",type);//类型-> 提示：MSG，数据：DATA
-        intent.putExtra("data",data);
-        intent.putExtra("falg",falg);
-        this.localBroadcastManager.sendBroadcast(intent);
+    public void setLoadingDialog(LoadingDialog ld)
+    {// 设置LoadingDialog
+        this.loadingDialog = ld;
     }
     
+    public LoadingDialog getLoadingDialog()
+    {// LoadingDialog
+        return this.loadingDialog;
+    }
+
+    public void sendBroadMsg(int code, String type, String data, boolean falg)
+    {// 发送本地广播 
+        // code {1,2,3,4,2,6,7} 对应 {"发现", "数据库配置", "用户列表", "人物属性", "发送宠物", "发送装备","开发工具" }
+        Intent intent = new Intent(getString(R.string.homepage));
+        intent.putExtra("code", code);
+        intent.putExtra("type", type);//类型-> 提示：MSG，数据：DATA，执行：EXEC，...
+        intent.putExtra("data", data);
+        intent.putExtra("falg", falg);
+        this.localBroadcastManager.sendBroadcast(intent);
+    }
+
     public LocalBroadcastManager getLBM()
     {// 本地广播
         return this.localBroadcastManager;
     }
-    
+
     public void setViewPager(ViewPager vp)
-    {
+    {// 设置视图控件
         this.viewPage = vp;
     }
-    
+
     public ViewPager getViewPager()
-    {
+    {// 得到视图控件
         return this.viewPage;
     }
-    
+
     public SharedPreferences getShare()
     {// 获取配置属性
         return this.share;
@@ -97,12 +107,12 @@ public class GlobalVariable extends Application
                             share.edit().putString("db_user", user).commit();
                             share.edit().putString("db_pass", pass).commit();
                             share.edit().apply();
-                            sendBroadMsg(2,"MSG","连接成功！",status);
+                            sendBroadMsg(2, "MSG", "连接成功！", status);
                         }
                         catch (Exception e)
                         {
                             status = false;
-                            sendBroadMsg(2,"MSG",e.toString(),status);
+                            sendBroadMsg(2, "MSG", getString(R.string.string_02), status);
                         }
                     }
                 }).start();
@@ -139,7 +149,7 @@ public class GlobalVariable extends Application
         catch (Exception e)
         {}
         this.status = false;
-        sendBroadMsg(2,"MSG",getString(R.string.db_status_error),status);
+        sendBroadMsg(2, "MSG", getString(R.string.db_status_error), status);
     }
 
     public void setJsonData(String json) throws Exception
@@ -151,5 +161,5 @@ public class GlobalVariable extends Application
     {// 获取人物属性json
         return this.Jdata;
     }
-    
+
 }
