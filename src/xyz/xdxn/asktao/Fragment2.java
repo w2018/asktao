@@ -12,7 +12,7 @@ public class Fragment2 extends Fragment
 {
     private GlobalVariable global;
 	private Button btn_db_connect ;
-	private EditText edit_db_host, edit_db_port, edit_db_name, edit_db_user, edit_db_pass;
+	private EditText edit_db_host, edit_db_port, edit_db_name, edit_db_user, edit_db_pass, edit_user_key;
     private TextView connectStatus;
     private IntentFilter intentFilter;
     private boolean falg = false;
@@ -23,7 +23,7 @@ public class Fragment2 extends Fragment
             int code = intent.getIntExtra("code", 0);
             String type = intent.getStringExtra("type");
             String data = intent.getStringExtra("data");
-            //falg = intent.getBooleanExtra("falg",false);
+            falg = intent.getBooleanExtra("falg",false);
             falg = global.getMysqlStatus();
             if (code == 2)
             {
@@ -34,12 +34,21 @@ public class Fragment2 extends Fragment
                         Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
                         break;
                     case "DATA":
-
+                        edit_user_key.setText(data);
+                        break;
+                    case "EXEC":
+                        
                         break;
                 }
                 btn_db_connect.setText(falg ? getString(R.string.db_close) : getString(R.string.db_connect));
                 connectStatus.setText(falg ? getString(R.string.db_status_success) : getString(R.string.db_status_error));
                 connectStatus.setTextColor(falg ? Color.BLUE : Color.RED);
+                if (!falg)
+                {
+                    getActivity().setTitle(getString(R.string.app_name));
+                    global.getViewPager().setCurrentItem(1); 
+                    Connect();
+                }
                 if (falg)
                 {
                     global.getViewPager().setCurrentItem(2); //连接成功跳转到 用户列表页
@@ -63,6 +72,7 @@ public class Fragment2 extends Fragment
         edit_db_name = (EditText)rootView.findViewById(R.id.edit_db_name);
         edit_db_user = (EditText)rootView.findViewById(R.id.edit_db_user);
         edit_db_pass = (EditText)rootView.findViewById(R.id.edit_db_pass);
+        edit_user_key = (EditText)rootView.findViewById(R.id.edit_user_key);
         connectStatus = (TextView)rootView.findViewById(R.id.ConnectStatus);
 
         edit_db_host.setText(global.getShare().getString("db_host", "127.0.0.1"));
@@ -82,15 +92,20 @@ public class Fragment2 extends Fragment
                     }
                     else
                     {
-                        falg = global.ConnectionMysql(edit_db_host.getText().toString().trim(), edit_db_port.getText().toString().trim(), edit_db_name.getText().toString().trim(), edit_db_user.getText().toString().trim(), edit_db_pass.getText().toString().trim());
-                        connectStatus.setText(getString(R.string.db_status_connect));
-                        global.getLoadingDialog().show();
+                        Connect();
                     }
                 }
             });
 		return rootView;
 	}
 
+    public void Connect()
+    {// 连接数据库
+        global.ConnectionMysql(edit_db_host.getText().toString().trim(), edit_db_port.getText().toString().trim(), edit_db_name.getText().toString().trim(), edit_db_user.getText().toString().trim(), edit_db_pass.getText().toString().trim());
+        connectStatus.setText(getString(R.string.db_status_connect));
+        global.getLoadingDialog().show();
+    }
+    
 	@Override
 	public void onDestroy()
     {
@@ -120,5 +135,5 @@ public class Fragment2 extends Fragment
     {
 		super.onStop();
 	}
-
 }
+ 

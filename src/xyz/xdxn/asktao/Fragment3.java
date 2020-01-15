@@ -11,8 +11,9 @@ import java.util.*;
 import android.support.v4.app.Fragment;
 
 
-public class Fragment3 extends Fragment
+public class Fragment3 extends Fragment implements AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener
 {
+
     private ListView listview;
     List<Map<String, Object>> list_data;
     private GlobalVariable global;
@@ -28,10 +29,12 @@ public class Fragment3 extends Fragment
             falg = intent.getBooleanExtra("falg", false);
             if (code == 3)
             {
+                listview.setAdapter(null);
+                global.getLoadingDialog().dismiss();
                 switch (type)
                 {
                     case "MSG"://消息提示
-                        Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), data, Toast.LENGTH_LONG).show();
                         break;
                     case "DATA"://数据处理
 
@@ -43,12 +46,10 @@ public class Fragment3 extends Fragment
                          item.put("regtime",  "2020");
                          list_data.add(item);
                          */
-                        SimpleAdapter simpleAdapter = new SimpleAdapter(global.getContext(), list_data, R.layout.listview_main_item, new String[] { "image", "user", "regtime", "account_id"}, new int[] { R.id.image, R.id.user, R.id.regtime, R.id.account_id});
+                        SimpleAdapter simpleAdapter = new SimpleAdapter(global.getContext(), list_data, R.layout.listview_main_item, new String[] { "image", "user", "regtime", "account_id", "update_time"}, new int[] { R.id.image, R.id.user, R.id.regtime, R.id.account_id, R.id.update_time});
                         listview.setAdapter(simpleAdapter);
-                        global.getLoadingDialog().dismiss();
                         break;
                     case "EXEC"://执行
-                        listview.setAdapter(null);
                         global.getLoadingDialog().show();
                         getUserList();
                         break;
@@ -66,9 +67,29 @@ public class Fragment3 extends Fragment
         intentFilter.addAction(getString(R.string.homepage));
         global.getLBM().registerReceiver(mbr, intentFilter);
         listview = (ListView)rootView.findViewById(R.id.listView);
+        listview.setOnItemClickListener(this);//点击事件
+        listview.setOnItemLongClickListener(this);//长按事件
 		return rootView;
 	}
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
+    {// 点击获Item取属性
+        
+        Toast.makeText(getActivity(), list_data.get(position).get("user").toString(), 0).show();
+        
+    }
+    
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+    {// 长按获Item取属性
+        global.setJsonData(list_data.get(position).get("data").toString());
+        getActivity().setTitle(getString(R.string.app_title) + " 〔已选定：" + list_data.get(position).get("user") + "〕");
+        
+        return false;
+    }
+    
+   
     public void getUserList()
     {// 获取用户列表
         if (falg = global.getMysqlStatus())
@@ -99,21 +120,41 @@ public class Fragment3 extends Fragment
                                 map.put("regtime", rs.getString("add_time"));//创建时间
                                 map.put("account_id", rs.getInt("account_id"));//用户ID
                                 map.put("data", rs.getString("data"));//人物json数据
+                                map.put("update_time", update_time);//最近登陆时间
                                 list_data.add(map);
+
+                                Collections.sort(list_data, new Comparator<Map<String, Object>>() {
+
+                                        @Override
+                                        public int compare(Map<String, Object> map1, Map<String, Object> map2)
+                                        {
+                                            long lo1 = global.getTimeLong(map1.get("update_time").toString());
+                                            long lo2 = global.getTimeLong(map2.get("update_time").toString());
+                                            int diff = (int)(lo2 - lo1);
+                                            if (diff > 0)
+                                            {
+                                                return 1;
+                                            }
+                                            else if (diff < 0)
+                                            {
+                                                return -1;
+                                            }
+                                            return 0; //相等为0
+                                        }
+                                    }); // 按最后上线时间排序
                             }
                             global.sendBroadMsg(3, "DATA", null, false);
-
                         }
                         catch (Exception e)
-                        {
-                            global.sendBroadMsg(3, "MSG", "错误：" + e.toString(), false);
+                        { 
+                            global.sendBroadMsg(3, "MSG", getString(R.string.string_05), false);
                         }
                     }
                 }).start();
         }
     }
 
-
+    
 	@Override
 	public void onDestroy()
     {
@@ -148,4 +189,41 @@ public class Fragment3 extends Fragment
 		super.onStop();
         //   Toast.makeText(getActivity(), "onStop", Toast.LENGTH_SHORT).show();
 	}
+
+}
+
+class Online implements Comparable<Map<String, Object>>
+{
+
+// 排序接口
+
+    private long update_time; // 最后上线时间
+
+    public Online(Map<String, Object> map)
+    {
+        this.update_time = map.get("update_time");
+    }
+
+    public long getUpdatetime()
+    {
+        return update_time;
+    }
+
+    public void setUpdate_time(int update_time)
+    {
+        this.update_time = update_time;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "";
+    }
+
+    @Override
+    public int compareTo(Map<String, Object> map)
+    {//重写Comparable接口的compareTo方法，
+        return (int)(this.update_time - this.getUpdatetime());
+        // 根据最后上线时间升序排列，降序修改相减顺序即可
+    }
 }

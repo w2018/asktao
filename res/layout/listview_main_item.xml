@@ -95,6 +95,24 @@
 					android:textColor="#EF6DC6"
 					android:gravity="center"/>
 
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="最近登录："
+					android:textAppearance="?android:attr/textAppearanceSmall"
+					android:textSize="12sp"
+					android:gravity="center"
+					android:layout_marginStart="10dp"/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="update_time"
+					android:textAppearance="?android:attr/textAppearanceSmall"
+					android:textSize="12sp"
+					android:gravity="center"
+					android:id="@+id/update_time"/>
+
 			</LinearLayout>
 
 		</LinearLayout>

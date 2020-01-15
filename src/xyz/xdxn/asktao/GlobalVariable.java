@@ -21,7 +21,7 @@ public class GlobalVariable extends Application
     private Statement stmt = null;
     private boolean status = false;
     //data解析
-    private JSONObject Jdata = null;
+    private String Jdata = null;
     private String[] allowArr;
     private SharedPreferences share;
     //广播类
@@ -44,24 +44,27 @@ public class GlobalVariable extends Application
     {
         this.context = con;
     }
-    
+
     public Context getContext()
     {
         return this.context;
     }
-    
+
     public Long getTimeLong(String time) 
     {// 转换成时间戳
         Long longTime = ;
-        try {
+        try
+        {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             longTime = sdf.parse(time).getTime();
-        } catch (ParseException e) {
+        }
+        catch (ParseException e)
+        {
             e.printStackTrace();
         }
         return longTime;
     }
-    
+
     public void setLoadingDialog(LoadingDialog ld)
     {// 设置LoadingDialog
         this.loadingDialog = ld;
@@ -113,37 +116,42 @@ public class GlobalVariable extends Application
         return this.allowArr;
     }
 
-    public boolean ConnectionMysql(final String host, final String port, final String dbname, final String user, final String pass)
+    public void ConnectionMysql(final String host, final String port, final String dbname, final String user, final String pass)
     {// 数据库连接（线程中操作网络）
-        if (!this.status)
-        {
-            new Thread(new Runnable() {
-                    @Override
-                    public void run()
+
+        new Thread(new Runnable() {
+                @Override
+                public void run()
+                {
+                    try
                     {
+                        String dburl = "jdbc:mysql://" + host + ":" + port + "/" + dbname;
+                        Class.forName("com.mysql.jdbc.Driver");
+                        conn = (Connection) DriverManager.getConnection(dburl, user, pass);
+                        share.edit().putString("db_host", host).commit();
+                        share.edit().putString("db_port", port).commit();
+                        share.edit().putString("db_name", dbname).commit();
+                        share.edit().putString("db_user", user).commit();
+                        share.edit().putString("db_pass", pass).commit();
+                        share.edit().apply();
+                        status = true;
+                        sendBroadMsg(2, "MSG", getString(R.string.string_04), true);
+                        new Thread(new IsStatus()).start();
+                    }
+                    catch (Exception e)
+                    {
+                        status = false;
                         try
                         {
-                            String dburl = "jdbc:mysql://" + host + ":" + port + "/" + dbname;
-                            Class.forName("com.mysql.jdbc.Driver");
-                            conn = (Connection) DriverManager.getConnection(dburl, user, pass);
-                            status = true;
-                            share.edit().putString("db_host", host).commit();
-                            share.edit().putString("db_port", port).commit();
-                            share.edit().putString("db_name", dbname).commit();
-                            share.edit().putString("db_user", user).commit();
-                            share.edit().putString("db_pass", pass).commit();
-                            share.edit().apply();
-                            sendBroadMsg(2, "MSG", "连接成功！", status);
+                            Thread.sleep(5000);
                         }
-                        catch (Exception e)
-                        {
-                            status = false;
-                            sendBroadMsg(2, "MSG", getString(R.string.string_02), status);
-                        }
+                        catch (InterruptedException e1)
+                        {}
+                        sendBroadMsg(2, "MSG", getString(R.string.string_02), false);
                     }
-                }).start();
-        }
-        return this.status;
+                }
+            }).start();
+
     }
 
     public Connection getConn() throws Exception
@@ -175,17 +183,38 @@ public class GlobalVariable extends Application
         catch (Exception e)
         {}
         this.status = false;
-        sendBroadMsg(2, "MSG", getString(R.string.db_status_error), status);
     }
 
-    public void setJsonData(String json) throws Exception
-    {// 设置人物属性json
-        this.Jdata = new JSONObject(json);
+    public void setJsonData(String json)
+    {// 设置选中人物属性json
+        this.Jdata = json;
     }
 
-    public JSONObject getJsonData()
-    {// 获取人物属性json
+    public String getJsonData()
+    {// 获取选中人物属性json
         return this.Jdata;
     }
 
+    class IsStatus implements Runnable
+    {// 检测数据连接状态
+
+        @Override
+        public void run()
+        {
+            while(status){
+                try
+                {
+                    Thread.sleep(5000);
+                    if (!conn.isValid(5000))
+                    { //如果数据库关闭了
+                        sendBroadMsg(2, "MSG", getString(R.string.db_status_reconnection), false);
+                        closeMysql();
+                        status = false;
+                    }
+                }
+                catch (Exception e)
+                {}
+            }
+        }
+    }
 }

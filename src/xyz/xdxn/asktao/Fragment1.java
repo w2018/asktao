@@ -13,7 +13,7 @@ public class Fragment1 extends Fragment
 {
     private WebView webshow;
     private String url,_url;
-    
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {

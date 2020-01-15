@@ -29,24 +29,26 @@ public final class R {
     }
     public static final class id {
         public static final int ConnectStatus=0x7f080005;
-        public static final int account_id=0x7f080011;
-        public static final int action_about=0x7f080014;
-        public static final int btn1=0x7f08000d;
+        public static final int account_id=0x7f080012;
+        public static final int action_about=0x7f080016;
+        public static final int btn1=0x7f08000e;
         public static final int btn_db_connect=0x7f08000b;
         public static final int edit_db_host=0x7f080006;
         public static final int edit_db_name=0x7f080008;
         public static final int edit_db_pass=0x7f08000a;
         public static final int edit_db_port=0x7f080007;
         public static final int edit_db_user=0x7f080009;
+        public static final int edit_user_key=0x7f08000c;
         public static final int fragment2LinearLayout1=0x7f080004;
-        public static final int image=0x7f08000f;
+        public static final int image=0x7f080010;
         public static final int iv_loading=0x7f080001;
-        public static final int listView=0x7f08000c;
-        public static final int regtime=0x7f080012;
-        public static final int startcon=0x7f080013;
-        public static final int tv1=0x7f08000e;
+        public static final int listView=0x7f08000d;
+        public static final int regtime=0x7f080013;
+        public static final int startcon=0x7f080015;
+        public static final int tv1=0x7f08000f;
         public static final int tv_loading=0x7f080002;
-        public static final int user=0x7f080010;
+        public static final int update_time=0x7f080014;
+        public static final int user=0x7f080011;
         public static final int viewpager=0x7f080000;
         public static final int webshow=0x7f080003;
     }
@@ -68,27 +70,31 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f050001;
-        public static final int db_close=0x7f050009;
-        public static final int db_connect=0x7f050008;
-        public static final int db_empty=0x7f05000a;
-        public static final int db_host=0x7f050003;
-        public static final int db_name=0x7f050005;
-        public static final int db_pass=0x7f050007;
-        public static final int db_port=0x7f050004;
-        public static final int db_status_connect=0x7f05000b;
-        public static final int db_status_error=0x7f05000d;
-        public static final int db_status_success=0x7f05000c;
-        public static final int db_title=0x7f050002;
-        public static final int db_user=0x7f050006;
+        public static final int app_title=0x7f050002;
+        public static final int db_close=0x7f05000a;
+        public static final int db_connect=0x7f050009;
+        public static final int db_empty=0x7f05000b;
+        public static final int db_host=0x7f050004;
+        public static final int db_name=0x7f050006;
+        public static final int db_pass=0x7f050008;
+        public static final int db_port=0x7f050005;
+        public static final int db_status_connect=0x7f05000c;
+        public static final int db_status_error=0x7f05000e;
+        public static final int db_status_reconnection=0x7f05000f;
+        public static final int db_status_success=0x7f05000d;
+        public static final int db_title=0x7f050003;
+        public static final int db_user=0x7f050007;
         public static final int homepage=0x7f050000;
-        public static final int item_about=0x7f05000e;
-        public static final int item_about_msg=0x7f050010;
-        public static final int item_about_title=0x7f05000f;
-        public static final int loading=0x7f050011;
-        public static final int string_00=0x7f050012;
-        public static final int string_01=0x7f050013;
-        public static final int string_02=0x7f050014;
-        public static final int string_03=0x7f050015;
+        public static final int item_about=0x7f050010;
+        public static final int item_about_msg=0x7f050012;
+        public static final int item_about_title=0x7f050011;
+        public static final int loading=0x7f050013;
+        public static final int string_00=0x7f050014;
+        public static final int string_01=0x7f050015;
+        public static final int string_02=0x7f050016;
+        public static final int string_03=0x7f050017;
+        public static final int string_04=0x7f050018;
+        public static final int string_05=0x7f050019;
     }
     public static final class style {
         /** 
