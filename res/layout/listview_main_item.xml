@@ -98,7 +98,7 @@
 				<TextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="最近登录："
+					android:text="最后活动："
 					android:textAppearance="?android:attr/textAppearanceSmall"
 					android:textSize="12sp"
 					android:gravity="center"

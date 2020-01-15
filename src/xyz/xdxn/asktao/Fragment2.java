@@ -40,7 +40,7 @@ public class Fragment2 extends Fragment
                         if (!falg)
                         {
                             Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
-                            getActivity().setTitle(getString(R.string.app_name));
+                            getActivity().setTitle("人物属性修改 安卓版！@小打小闹");
                             global.getViewPager().setCurrentItem(1); 
                             Connect();
                         }

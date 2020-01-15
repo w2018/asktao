@@ -1,7 +1,8 @@
 package xyz.xdxn.asktao;
 
-import android.content.*;
+import android.app.*;
 import android.os.*;
+import android.content.*;
 import android.support.v4.app.*;
 import android.view.*;
 import android.view.ContextMenu.*;
@@ -9,6 +10,9 @@ import android.widget.*;
 import android.widget.AdapterView.*;
 import java.sql.*;
 import java.util.*;
+import xyz.xdxn.asktao.*;
+
+import android.support.v4.app.Fragment;
 
 
 public class Fragment3 extends Fragment implements AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener
@@ -28,7 +32,6 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
             falg = intent.getBooleanExtra("falg", false);
             if (code == 3)
             {
-                listview.setAdapter(null);
                 global.getLoadingDialog().dismiss();
                 switch (type)
                 {
@@ -45,10 +48,12 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                          item.put("regtime",  "2020");
                          list_data.add(item);
                          */
+                        listview.setAdapter(null);
                         SimpleAdapter simpleAdapter = new SimpleAdapter(global.getContext(), list_data, R.layout.listview_main_item, new String[] { "image", "user", "regtime", "account_id", "update_time"}, new int[] { R.id.image, R.id.user, R.id.regtime, R.id.account_id, R.id.update_time});
                         listview.setAdapter(simpleAdapter);
                         break;
                     case "EXEC"://执行
+                        listview.setAdapter(null);
                         global.getLoadingDialog().show();
                         getUserList();
                         break;
@@ -103,7 +108,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     public boolean onContextItemSelected(MenuItem item) 
     {// 响应Item长按菜单事件处理
         AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();//获取点击的item的id
-        String id = String.valueOf(info.id);  
+        final int id = (int)info.id;  
         switch (item.getItemId())
         {
             case 0:
@@ -113,7 +118,30 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
 
                 break;
             case 2:
-
+                //加载布局
+                LinearLayout inputData = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.cz_coin, null);
+                final EditText edit_cz_coin = (EditText) inputData.findViewById(R.id.edit_cz_coin);
+                Button btn_cz_coin = (Button) inputData.findViewById(R.id.btn_cz_coin);
+                btn_cz_coin.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View p1)
+                        { 
+                            mInsertCoin(Integer.parseInt(list_data.get(id).get("account_id").toString()),Integer.parseInt(edit_cz_coin.getText().toString().trim()));
+                        }
+                    });
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("元宝充值（充值成功在一叶之秋处领取）");
+                builder.setView(inputData);
+                builder.setCancelable(false);
+                builder.setPositiveButton("返回",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            Toast.makeText(getActivity(), "欢迎继续充值～", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                builder.show();
                 break;
             case 3:
 
@@ -125,9 +153,53 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
 
                 break;
         }
-        
+
         return super.onContextItemSelected(item);
     }
+
+    public void  mInsertCoin(final int id, final int coin)
+    {//充值元宝
+        if (falg = global.getMysqlStatus())
+        {
+            new Thread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            String name = null;
+                            String cx_sql = "SELECT * FROM `accounts` WHERE `id` = '" + id + "' LIMIT 0, 10";
+                            ResultSet rs = global.getStmt().executeQuery(cx_sql);
+                            while (rs.next())
+                            {
+                                name = rs.getString("name");
+                                int  code = (int) (Math.random() * (9999 - 1000) + 1000);
+                                String sql = "INSERT INTO `charge` (`accountname`, `coin`, `state`, `add_time`, `update_time`, `deleted`, `money`, `code`)VALUES ('"
+                                    + name + "', " + coin + ", 0, now(), now(), 0, 0, '" + code + "')";
+                                int result = global.getStmt().executeUpdate(sql);
+                                if (result > 0)
+                                {
+                                    String q_sql = "SELECT * FROM `charge` WHERE `accountname` = '" + name + "' AND `coin` = '"
+                                        + coin + "' AND `code` = '" + code + "' LIMIT 0, 100";
+                                    ResultSet q_rs = global.getStmt().executeQuery(q_sql);
+                                    while (q_rs.next())
+                                    {
+                                        int addcion = q_rs.getInt("coin");
+                                        String addname = q_rs.getString("accountname");
+                                        global.sendBroadMsg(3, "MSG", "充值成功 | 用户: " + addname + " | 元宝数: " + addcion , false);
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {    
+                            global.sendBroadMsg(3, "MSG", "充值失败，请检查网络状况！", false);
+                        }
+                    }
+                }).start();
+        }
+    }
+
 
     public void getUserList()
     {// 获取用户列表
@@ -194,40 +266,40 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     }
 
 
-	@Override
-	public void onDestroy()
+    @Override
+    public void onDestroy()
     {
-		super.onDestroy();
+        super.onDestroy();
         // Toast.makeText(getActivity(), "onDestroy", Toast.LENGTH_SHORT).show();
-	}
+    }
 
-	@Override
-	public void onPause()
+    @Override
+    public void onPause()
     {
-		super.onPause();
+        super.onPause();
         //  Toast.makeText(getActivity(), "onPause", Toast.LENGTH_SHORT).show();
-	}
+    }
 
-	@Override
-	public void onResume()
+    @Override
+    public void onResume()
     {
-		super.onResume();
+        super.onResume();
         //  Toast.makeText(getActivity(), "onResume", Toast.LENGTH_SHORT).show();
-	}
+    }
 
-	@Override
-	public void onStart()
+    @Override
+    public void onStart()
     {
-		super.onStart();
+        super.onStart();
         //    Toast.makeText(getActivity(), "onStart", Toast.LENGTH_SHORT).show();
-	}
+    }
 
-	@Override
-	public void onStop()
+    @Override
+    public void onStop()
     {
-		super.onStop();
+        super.onStop();
         //   Toast.makeText(getActivity(), "onStop", Toast.LENGTH_SHORT).show();
-	}
+    }
 
 }
 

@@ -28,6 +28,7 @@ OnPageChangeListener, TabListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_pager);
+        setTitle("人物属性修改 安卓版！@小打小闹");
         global = (GlobalVariable)this.getApplicationContext();
         loadingDialog = new LoadingDialog(this, getString(R.string.loading), R.drawable.ic_dialog_loading);
         global.setLoadingDialog(loadingDialog);
