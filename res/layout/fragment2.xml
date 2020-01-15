@@ -173,7 +173,7 @@
 					android:gravity="left|start"
 					android:hint="管理员授权某种权限后，提供给用户的秘钥"
 					android:id="@+id/edit_user_key"/>
-
+                
 			</LinearLayout>
 
 			<Button

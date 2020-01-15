@@ -4,12 +4,12 @@ package xyz.xdxn.asktao;
  */
 import android.app.*;
 import android.content.*;
+import android.os.*;
 import android.support.v4.content.*;
 import android.support.v4.view.*;
 import com.mysql.jdbc.*;
 import java.sql.*;
 import java.text.*;
-import org.json.*;
 
 import com.mysql.jdbc.Connection;
 import java.sql.Statement;
@@ -31,6 +31,7 @@ public class GlobalVariable extends Application
     private LoadingDialog loadingDialog;
     //应用类
     private Context context;
+    private boolean falg = false;
 
     @Override
     public void onCreate()
@@ -48,6 +49,12 @@ public class GlobalVariable extends Application
     public Context getContext()
     {
         return this.context;
+    }
+
+    public void setVibrator(int time)
+    {// 调用振动
+        Vibrator vibrator = (Vibrator)this.getSystemService(this.VIBRATOR_SERVICE);
+        vibrator.vibrate(time);
     }
 
     public Long getTimeLong(String time) 
@@ -135,6 +142,7 @@ public class GlobalVariable extends Application
                         share.edit().putString("db_pass", pass).commit();
                         share.edit().apply();
                         status = true;
+                        falg = true;
                         sendBroadMsg(2, "MSG", getString(R.string.string_04), true);
                         new Thread(new IsStatus()).start();
                     }
@@ -182,7 +190,9 @@ public class GlobalVariable extends Application
         }
         catch (Exception e)
         {}
+        this.falg = false;
         this.status = false;
+        sendBroadMsg(2, "MSG", getString(R.string.db_status_error), false);
     }
 
     public void setJsonData(String json)
@@ -201,14 +211,15 @@ public class GlobalVariable extends Application
         @Override
         public void run()
         {
-            while(status){
+            while (status)
+            {
                 try
                 {
                     Thread.sleep(5000);
                     if (!conn.isValid(5000))
                     { //如果数据库关闭了
-                        sendBroadMsg(2, "MSG", getString(R.string.db_status_reconnection), false);
-                        closeMysql();
+                        if (falg)
+                            sendBroadMsg(2, "RECONNECT", getString(R.string.db_status_reconnection), false);
                         status = false;
                     }
                 }

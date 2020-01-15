@@ -4,18 +4,17 @@ import android.content.*;
 import android.os.*;
 import android.support.v4.app.*;
 import android.view.*;
+import android.view.ContextMenu.*;
 import android.widget.*;
+import android.widget.AdapterView.*;
 import java.sql.*;
 import java.util.*;
-
-import android.support.v4.app.Fragment;
 
 
 public class Fragment3 extends Fragment implements AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener
 {
-
     private ListView listview;
-    List<Map<String, Object>> list_data;
+    private List<Map<String, Object>> list_data;
     private GlobalVariable global;
     private IntentFilter intentFilter;
     private boolean falg = false;
@@ -69,27 +68,67 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         listview = (ListView)rootView.findViewById(R.id.listView);
         listview.setOnItemClickListener(this);//点击事件
         listview.setOnItemLongClickListener(this);//长按事件
+        listview.setOnCreateContextMenuListener(this);
 		return rootView;
 	}
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id)
     {// 点击获Item取属性
-        
-        Toast.makeText(getActivity(), list_data.get(position).get("user").toString(), 0).show();
-        
+        Toast.makeText(getActivity(), getString(R.string.string_06), 0).show();
     }
-    
+
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
     {// 长按获Item取属性
         global.setJsonData(list_data.get(position).get("data").toString());
         getActivity().setTitle(getString(R.string.app_title) + " 〔已选定：" + list_data.get(position).get("user") + "〕");
-        
+        //global.setVibrator(20);
         return false;
     }
-    
-   
+
+    @Override
+    public void onCreateContextMenu(ContextMenu arg0, View arg1, ContextMenuInfo arg2) 
+    {// 添加Item长按菜单
+        arg0.setHeaderTitle("选择操作");
+        arg0.add(0, 0, 0, "修改属性");
+        arg0.add(0, 1, 0, "生成秘钥");
+        arg0.add(0, 2, 0, "充值元宝");
+        arg0.add(0, 3, 0, "修改密码");
+        arg0.add(0, 4, 0, "封停账号");
+        arg0.add(0, 5, 0, "删除账号");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) 
+    {// 响应Item长按菜单事件处理
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();//获取点击的item的id
+        String id = String.valueOf(info.id);  
+        switch (item.getItemId())
+        {
+            case 0:
+                Toast.makeText(getActivity(), getString(R.string.encoding), 0).show();
+                break;
+            case 1:
+
+                break;
+            case 2:
+
+                break;
+            case 3:
+
+                break;
+            case 4:
+
+                break;
+            case 5:
+
+                break;
+        }
+        
+        return super.onContextItemSelected(item);
+    }
+
     public void getUserList()
     {// 获取用户列表
         if (falg = global.getMysqlStatus())
@@ -154,7 +193,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         }
     }
 
-    
+
 	@Override
 	public void onDestroy()
     {

@@ -23,7 +23,7 @@ public class Fragment2 extends Fragment
             int code = intent.getIntExtra("code", 0);
             String type = intent.getStringExtra("type");
             String data = intent.getStringExtra("data");
-            falg = intent.getBooleanExtra("falg",false);
+            falg = intent.getBooleanExtra("falg", false);
             falg = global.getMysqlStatus();
             if (code == 2)
             {
@@ -36,19 +36,19 @@ public class Fragment2 extends Fragment
                     case "DATA":
                         edit_user_key.setText(data);
                         break;
-                    case "EXEC":
-                        
+                    case "RECONNECT":
+                        if (!falg)
+                        {
+                            Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
+                            getActivity().setTitle(getString(R.string.app_name));
+                            global.getViewPager().setCurrentItem(1); 
+                            Connect();
+                        }
                         break;
                 }
                 btn_db_connect.setText(falg ? getString(R.string.db_close) : getString(R.string.db_connect));
                 connectStatus.setText(falg ? getString(R.string.db_status_success) : getString(R.string.db_status_error));
                 connectStatus.setTextColor(falg ? Color.BLUE : Color.RED);
-                if (!falg)
-                {
-                    getActivity().setTitle(getString(R.string.app_name));
-                    global.getViewPager().setCurrentItem(1); 
-                    Connect();
-                }
                 if (falg)
                 {
                     global.getViewPager().setCurrentItem(2); //连接成功跳转到 用户列表页
@@ -105,7 +105,7 @@ public class Fragment2 extends Fragment
         connectStatus.setText(getString(R.string.db_status_connect));
         global.getLoadingDialog().show();
     }
-    
+
 	@Override
 	public void onDestroy()
     {
