@@ -22,6 +22,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     private GlobalVariable global;
     private IntentFilter intentFilter;
     private boolean falg = false;
+    private String uname;
     protected BroadcastReceiver mbr = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent)
@@ -36,7 +37,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 switch (type)
                 {
                     case "MSG"://消息提示
-                        Toast.makeText(getActivity(), data, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), data, Toast.LENGTH_SHORT).show();
                         break;
                     case "DATA"://数据处理
 
@@ -100,7 +101,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         arg0.add(0, 1, 0, "生成秘钥");
         arg0.add(0, 2, 0, "充值元宝");
         arg0.add(0, 3, 0, "修改密码");
-        arg0.add(0, 4, 0, "封停账号");
+        arg0.add(0, 4, 0, "封停角色");
         arg0.add(0, 5, 0, "删除账号");
     }
 
@@ -108,7 +109,8 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     public boolean onContextItemSelected(MenuItem item) 
     {// 响应Item长按菜单事件处理
         AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();//获取点击的item的id
-        final int id = (int)info.id;  
+        final int id = (int)info.id; 
+        uname = list_data.get(id).get("user").toString();
         switch (item.getItemId())
         {
             case 0:
@@ -119,42 +121,203 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 break;
             case 2:
                 //加载布局
-                LinearLayout inputData = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.cz_coin, null);
-                final EditText edit_cz_coin = (EditText) inputData.findViewById(R.id.edit_cz_coin);
-                Button btn_cz_coin = (Button) inputData.findViewById(R.id.btn_cz_coin);
+                LinearLayout cz_view = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.cz_coin, null);
+                final EditText edit_cz_coin = (EditText) cz_view.findViewById(R.id.edit_cz_coin);
+                Button btn_cz_coin = (Button) cz_view.findViewById(R.id.btn_cz_coin);
                 btn_cz_coin.setOnClickListener(new View.OnClickListener(){
                         @Override
                         public void onClick(View p1)
                         { 
-                            mInsertCoin(Integer.parseInt(list_data.get(id).get("account_id").toString()),Integer.parseInt(edit_cz_coin.getText().toString().trim()));
+                            mInsertCoin(Integer.parseInt(list_data.get(id).get("account_id").toString()), Integer.parseInt(edit_cz_coin.getText().toString().trim()));
                         }
                     });
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("元宝充值（充值成功在一叶之秋处领取）");
-                builder.setView(inputData);
-                builder.setCancelable(false);
-                builder.setPositiveButton("返回",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            Toast.makeText(getActivity(), "欢迎继续充值～", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                builder.show();
+                setView(cz_view, "元宝充值（一叶之秋处领取）", "欢迎继续充值～");
                 break;
             case 3:
-
+                //加载布局
+                LinearLayout gm_view = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.gm_user, null);
+                final EditText edit_gm_passwd = (EditText) gm_view.findViewById(R.id.edit_gm_passwd);
+                final EditText edit_gm_key = (EditText) gm_view.findViewById(R.id.edit_gm_key);
+                Button btn_gm_user = (Button) gm_view.findViewById(R.id.btn_gm_user);
+                btn_gm_user.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View p1)
+                        { 
+                            mUpdatePassWorld(Integer.parseInt(list_data.get(id).get("account_id").toString()), edit_gm_passwd.getText().toString().trim(), edit_gm_key.getText().toString().trim());
+                        }
+                    });
+                setView(gm_view, "修改密码(所属账号密码)", "别又忘记了～");
                 break;
             case 4:
-
+                //加载布局
+                LinearLayout fh_view = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.fh_user, null);
+                TextView text_fh_zt = (TextView) fh_view.findViewById(R.id.text_fh_zt);
+                text_fh_zt.setText(Integer.parseInt(list_data.get(id).get("deleted").toString()) ==0 ? "正常":"已封号");
+                Button btn_fh_on = (Button) fh_view.findViewById(R.id.btn_fh_on);
+                btn_fh_on.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View p1)
+                        { //封号
+                            mUpdateDeleted(Integer.parseInt(list_data.get(id).get("account_id").toString()),1);
+                        }
+                    });
+                Button btn_fh_off = (Button) fh_view.findViewById(R.id.btn_fh_off);
+                btn_fh_off.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View p1)
+                        { //解封
+                            mUpdateDeleted(Integer.parseInt(list_data.get(id).get("account_id").toString()),0);
+                        }
+                    });
+                setView(fh_view, "角色封停（只封人物角色）", "再看看还有谁做了坏事～");
                 break;
             case 5:
-
+                //加载布局
+                final int code = (int) (Math.random() * (9999 - 1000) + 1000);//确认码
+                //final int code = (int) (Math.random() * (999999999 - 100000000) + 100000000);//确认码
+                LinearLayout sc_view = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.sc_user, null);
+                final TextView text_sc_code = (TextView) sc_view.findViewById(R.id.text_code);
+                text_sc_code.setText(code + "");
+                final EditText edit_sc_code = (EditText) sc_view.findViewById(R.id.edit_sc_code);
+                Button btn_sc_dq = (Button) sc_view.findViewById(R.id.btn_sc_dq);
+                btn_sc_dq.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View p1)
+                        {// 删除当前游戏人物
+                            try
+                            {
+                                if (Integer.parseInt(edit_sc_code.getText().toString()) == code)
+                                {
+                                    mDeleteUserData(Integer.parseInt(list_data.get(id).get("account_id").toString()), false);
+                                }
+                                else
+                                {
+                                    global.sendBroadMsg(3, "MSG", "输入不正确", false);
+                                }
+                            }
+                            catch (NumberFormatException e)
+                            {}
+                        }
+                    });
+                Button btn_sc_all = (Button) sc_view.findViewById(R.id.btn_sc_all);
+                btn_sc_all.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View p1)
+                        {// 删除账户（所有游戏人物）
+                            try
+                            {
+                                if (Integer.parseInt(edit_sc_code.getText().toString()) == code)
+                                {
+                                    mDeleteUserData(Integer.parseInt(list_data.get(id).get("account_id").toString()), true);
+                                }
+                                else
+                                {
+                                    global.sendBroadMsg(3, "MSG", "输入不正确", false);
+                                }
+                            }
+                            catch (NumberFormatException e)
+                            {}
+                        }
+                    });
+                setView(sc_view, "删除账号（该操作不可逆）", "这得多大仇呀～");
                 break;
         }
 
         return super.onContextItemSelected(item);
+    }
+
+    public void  mUpdatePassWorld(final int id, final String passwd, final String key)
+    {//修改密码、超级密码
+        if (falg = global.getMysqlStatus())
+        {
+            new Thread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            String fh_sql = "UPDATE `accounts` SET `keyword` = '" + key + "', `password` = '" + passwd + "' WHERE `accounts`.`id` =" + id;
+                            int result = global.getStmt().executeUpdate(fh_sql);
+                            if (result > 0)
+                            {
+                                global.sendBroadMsg(3, "MSG", "修改成功！", false);
+                            }
+                            else
+                            {
+                                global.sendBroadMsg(3, "MSG", "修改失败！", false);
+                            }
+                        }
+                        catch (Exception e)
+                        {    
+                            global.sendBroadMsg(3, "MSG", "操作失败，请检查网络状况！", false);
+                        }
+                    }
+                }).start();
+        }
+    }
+    
+    public void  mUpdateDeleted(final int id, final int deleted)
+    {//封号  1封、0不封
+        if (falg = global.getMysqlStatus())
+        {
+            new Thread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            String fh_sql = "UPDATE `characters` SET `deleted` = '" + deleted + "' WHERE `characters`.`account_id` =" + id;
+                            int result = global.getStmt().executeUpdate(fh_sql);
+                            if (result > 0)
+                            {
+                                global.sendBroadMsg(3, "MSG", deleted == 1 ? "封号成功！":"解封成功！", false);
+                            }
+                            else
+                            {
+                                global.sendBroadMsg(3, "MSG", deleted == 1 ? "封号失败！":"解封失败！", false);
+                            }
+                        }
+                        catch (Exception e)
+                        {    
+                            global.sendBroadMsg(3, "MSG", "操作失败，请检查网络状况！", false);
+                        }
+                    }
+                }).start();
+        }
+    }
+
+    public void mDeleteUserData(final int account_id, final boolean all)
+    {// 删除账号
+        if (falg = global.getMysqlStatus())
+        {
+            new Thread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            String[] sql_dq = {"DELETE FROM `characters` WHERE `characters`.`account_id` =" + account_id};
+                            String[] sql_all = {"DELETE FROM `accounts` WHERE `accounts`.`id` =" + account_id, "DELETE FROM `characters` WHERE `characters`.`account_id` =" + account_id};
+                            for (String sql : all ? sql_all : sql_dq)
+                            {
+                                int result = global.getStmt().executeUpdate(sql);
+                                if (result > 0)
+                                {
+                                    global.sendBroadMsg(3, "MSG", "成功删除账号！", false);
+                                }
+                                else
+                                {
+                                    global.sendBroadMsg(3, "MSG", "删除失败 或 账号不存在！", false);
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            global.sendBroadMsg(3, "MSG", "删除失败！" + e.toString(), false);
+                        }
+                    }
+                }).start();
+        }
     }
 
     public void  mInsertCoin(final int id, final int coin)
@@ -200,6 +363,22 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         }
     }
 
+    public void setView(View view, String title, final String msg)
+    {// 设置view
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(uname + "：" +title);
+        builder.setView(view);
+        builder.setCancelable(false);
+        builder.setPositiveButton("返回",
+            new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+        builder.show();
+    }
 
     public void getUserList()
     {// 获取用户列表
@@ -232,6 +411,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                                 map.put("account_id", rs.getInt("account_id"));//用户ID
                                 map.put("data", rs.getString("data"));//人物json数据
                                 map.put("update_time", update_time);//最近登陆时间
+                                map.put("deleted", rs.getString("deleted"));//封号
                                 list_data.add(map);
 
                                 Collections.sort(list_data, new Comparator<Map<String, Object>>() {

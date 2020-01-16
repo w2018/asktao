@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:gravity="center">
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:layout_marginTop="10dp">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:text="状态："
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:gravity="center"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="正常"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:id="@+id/text_fh_zt"
+			android:textColor="#FD67BC"
+			android:layout_marginStart="10dp"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:layout_marginTop="20dp">
+
+		<Button
+			android:background="@drawable/edit_border_shape"
+			android:layout_width="100dp"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="35dp"
+			android:text="立即封号"
+			android:id="@+id/btn_fh_on"/>
+
+		<Button
+			android:background="@drawable/edit_border_shape"
+			android:layout_width="100dp"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="35dp"
+			android:text="解除封号"
+			android:id="@+id/btn_fh_off"
+			android:layout_marginStart="30dp"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:gravity="center">
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="确认码"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:textColor="#FF0F00"
+		android:id="@+id/text_code"
+		android:layout_marginTop="20dp"/>
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:layout_marginTop="10dp">
+
+		<EditText
+			android:background="@drawable/edit_border_shape"
+			android:layout_width="200dp"
+			android:inputType="number"
+			android:layout_height="wrap_content"
+			android:ems="10"
+			android:layout_gravity="center"
+			android:hint="请输入上面的确认码"
+			android:id="@+id/edit_sc_code"/>
+
+	</LinearLayout>
+
+	<Button
+		android:background="@drawable/edit_border_shape"
+		android:layout_width="280dp"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_height="35dp"
+		android:text="删除当前游戏人物"
+		android:id="@+id/btn_sc_dq"
+		android:layout_marginTop="15dp"/>
+
+	<Button
+		android:background="@drawable/edit_border_shape"
+		android:layout_width="280dp"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_height="35dp"
+		android:text="删除游戏账户（含账户下所有游戏人物）"
+		android:id="@+id/btn_sc_all"
+		android:layout_marginTop="15dp"/>
+
+</LinearLayout>
+
