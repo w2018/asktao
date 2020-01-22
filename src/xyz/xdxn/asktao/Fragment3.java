@@ -23,7 +23,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     private GlobalVariable global;
     private IntentFilter intentFilter;
     private boolean falg = false;
-    private String uname;
+    private String uname,jmstr;
     protected BroadcastReceiver mbr = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent)
@@ -119,6 +119,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 break;
             case 1:
                 final JSONObject json = new JSONObject();
+                final String randcode = "C" + (new Random().nextInt(5000) + 1000);
                 LinearLayout qx_view = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.authorize_setting, null);
                 final EditText edit_qx_my = (EditText) qx_view.findViewById(R.id.edit_qx_my);
                 CheckBox checkbox_ggk = (CheckBox)qx_view.findViewById(R.id.checkbox_ggk);//观光
@@ -226,17 +227,17 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                                 json.put("db_name", global.getShare().getString("db_name", "gserver"));
                                 json.put("db_user", global.getShare().getString("db_user", "root"));
                                 json.put("db_pass", global.getShare().getString("db_pass", "123456"));
-                                String jmstr = global.xdxn(json.toString());//异或运算加密
+                                jmstr = global.xdxn(json.toString());//异或运算加密
                                 // jmstr = new String(Base64.encodeBase64(jmstr.getBytes()));//base64加密
                                 jmstr = global.str2HexStr(jmstr);
-                                jmstr  = "C" + (new Random().nextInt(5000)+ 1000)+ jmstr;
-                                edit_qx_my.setText(jmstr);
+                                jmstr = randcode + jmstr;
                             }
                             catch (JSONException e)
-                            {}
+                            {}    
+                            edit_qx_my.setText(jmstr);
                         }
                     });
-                setView(qx_view, "秘钥生成", "拿去浪吧～");
+                setView(qx_view, "秘钥配置", "拿去浪吧～");
                 break;
             case 2:
                 //加载布局
@@ -512,8 +513,17 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                     {
                         try
                         {
-                            String sql = "SELECT * FROM `characters` LIMIT 0, 5000";
-                            //String sql = "SELECT * FROM `accounts` WHERE `name` = '" + account + "' LIMIT 0, 1000";
+                            String sql = "";
+                            if (global.isKey())
+                            {
+                                JSONObject json = new JSONObject(global.getQXJSON());
+                                sql = "SELECT * FROM `characters` WHERE `id` = " + json.getInt("user_id");
+                            }
+                            else
+                            {
+                                sql = "SELECT * FROM `characters` LIMIT 0, 5000";
+                                //String sql = "SELECT * FROM `accounts` WHERE `name` = '" + account + "' LIMIT 0, 1000";
+                            }
                             ResultSet rs = global.getStmt().executeQuery(sql);
                             list_data = new ArrayList<Map<String, Object>>();
                             while (rs.next())
@@ -528,34 +538,14 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                                 {
                                     map.put("image", R.drawable.offline); //离线
                                 }
-                                if (global.isKey())
-                                {
-                                    JSONObject json = new JSONObject(global.getQXJSON());
-                                    if ((rs.getString("name")).equals(json.getString("user_name")))
-                                    {
-                                        map.put("user", rs.getString("name")); //游戏名称
-                                        map.put("regtime", rs.getString("add_time"));//创建时间
-                                        map.put("account_id", rs.getInt("account_id"));//用户ID
-                                        map.put("id", rs.getInt("id"));//当前角色ID
-                                        map.put("data", rs.getString("data"));//人物json数据
-                                        map.put("update_time", update_time);//最近登陆时间
-                                        map.put("deleted", rs.getString("deleted"));//封号
-                                        list_data.add(map);
-                                        global.sendBroadMsg(3, "MSG", "使用秘钥登录！", false);
-                                    }
-                                }
-                                else
-                                {
-                                    map.put("user", rs.getString("name")); //游戏名称
-                                    map.put("regtime", rs.getString("add_time"));//创建时间
-                                    map.put("account_id", rs.getInt("account_id"));//用户ID
-                                    map.put("id", rs.getInt("id"));//当前角色ID
-                                    map.put("data", rs.getString("data"));//人物json数据
-                                    map.put("update_time", update_time);//最近登陆时间
-                                    map.put("deleted", rs.getString("deleted"));//封号
-
-                                    list_data.add(map);
-                                }
+                                map.put("user", rs.getString("name")); //游戏名称
+                                map.put("regtime", rs.getString("add_time"));//创建时间
+                                map.put("account_id", rs.getInt("account_id"));//用户ID
+                                map.put("id", rs.getInt("id"));//当前角色ID
+                                map.put("data", rs.getString("data"));//人物json数据
+                                map.put("update_time", update_time);//最近登陆时间
+                                map.put("deleted", rs.getString("deleted"));//封号
+                                list_data.add(map);
                                 Collections.sort(list_data, new Comparator<Map<String, Object>>() {
 
                                         @Override
