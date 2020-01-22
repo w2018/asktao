@@ -581,35 +581,30 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     public void onDestroy()
     {
         super.onDestroy();
-        // Toast.makeText(getActivity(), "onDestroy", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPause()
     {
         super.onPause();
-        //  Toast.makeText(getActivity(), "onPause", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        //  Toast.makeText(getActivity(), "onResume", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStart()
     {
         super.onStart();
-        //    Toast.makeText(getActivity(), "onStart", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStop()
     {
         super.onStop();
-        //   Toast.makeText(getActivity(), "onStop", Toast.LENGTH_SHORT).show();
     }
 
 }
