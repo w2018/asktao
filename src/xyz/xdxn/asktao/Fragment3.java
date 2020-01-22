@@ -1,8 +1,8 @@
 package xyz.xdxn.asktao;
 
 import android.app.*;
-import android.os.*;
 import android.content.*;
+import android.os.*;
 import android.support.v4.app.*;
 import android.view.*;
 import android.view.ContextMenu.*;
@@ -10,7 +10,8 @@ import android.widget.*;
 import android.widget.AdapterView.*;
 import java.sql.*;
 import java.util.*;
-import xyz.xdxn.asktao.*;
+import org.apache.commons.codec.binary.*;
+import org.json.*;
 
 import android.support.v4.app.Fragment;
 
@@ -96,7 +97,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     @Override
     public void onCreateContextMenu(ContextMenu arg0, View arg1, ContextMenuInfo arg2) 
     {// 添加Item长按菜单
-        arg0.setHeaderTitle("选择操作");
+        arg0.setHeaderTitle("人物离线后操作(约2~3分钟)");
         arg0.add(0, 0, 0, "修改属性");
         arg0.add(0, 1, 0, "生成秘钥");
         arg0.add(0, 2, 0, "充值元宝");
@@ -117,7 +118,125 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 Toast.makeText(getActivity(), getString(R.string.encoding), 0).show();
                 break;
             case 1:
-
+                final JSONObject json = new JSONObject();
+                LinearLayout qx_view = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.authorize_setting, null);
+                final EditText edit_qx_my = (EditText) qx_view.findViewById(R.id.edit_qx_my);
+                CheckBox checkbox_ggk = (CheckBox)qx_view.findViewById(R.id.checkbox_ggk);//观光
+                checkbox_ggk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){ 
+                        @Override 
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                        { 
+                            try
+                            {
+                                json.put("ggk", isChecked);
+                            }
+                            catch (JSONException e)
+                            {}
+                        } 
+                    });
+                CheckBox checkbox_czyb = (CheckBox)qx_view.findViewById(R.id.checkbox_czyb);//充值元宝
+                checkbox_czyb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){ 
+                        @Override 
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                        { 
+                            try
+                            {
+                                json.put("czyb", isChecked);
+                            }
+                            catch (JSONException e)
+                            {}
+                        } 
+                    });
+                CheckBox checkbox_fscw = (CheckBox)qx_view.findViewById(R.id.checkbox_fscw);//发送宠物
+                checkbox_fscw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){ 
+                        @Override 
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                        { 
+                            try
+                            {
+                                json.put("facw", isChecked);
+                            }
+                            catch (JSONException e)
+                            {}
+                        } 
+                    });
+                CheckBox checkbox_fszb = (CheckBox)qx_view.findViewById(R.id.checkbox_fszb);//发送装备
+                checkbox_fszb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){ 
+                        @Override 
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                        { 
+                            try
+                            {
+                                json.put("fszb", isChecked);
+                            }
+                            catch (JSONException e)
+                            {}
+                        } 
+                    });
+                CheckBox checkbox_sczh = (CheckBox)qx_view.findViewById(R.id.checkbox_sczh);//删除账号
+                checkbox_sczh.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){ 
+                        @Override 
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                        { 
+                            try
+                            {
+                                json.put("sczh", isChecked);
+                            }
+                            catch (JSONException e)
+                            {} 
+                        } 
+                    });
+                CheckBox checkbox_xgsx = (CheckBox)qx_view.findViewById(R.id.checkbox_xgsx);//修改属性
+                checkbox_xgsx.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){ 
+                        @Override 
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                        { 
+                            try
+                            {
+                                json.put("xgsx", isChecked);
+                            }
+                            catch (JSONException e)
+                            {} 
+                        } 
+                    });
+                CheckBox checkbox_root = (CheckBox)qx_view.findViewById(R.id.checkbox_root);//设置管理员
+                checkbox_root.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){ 
+                        @Override 
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+                        { 
+                            try
+                            {
+                                json.put("root", isChecked);
+                            }
+                            catch (JSONException e)
+                            {} 
+                        } 
+                    });
+                Button btn_qx_sc = (Button) qx_view.findViewById(R.id.btn_qx_xg);
+                btn_qx_sc.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View p1)
+                        { 
+                            try
+                            {
+                                json.put("user_name", list_data.get(id).get("user").toString());//人物名称
+                                json.put("user_id", Integer.parseInt(list_data.get(id).get("id").toString()));//人物ID
+                                json.put("db_host", global.getShare().getString("db_host", "127.0.0.1"));
+                                json.put("db_port", global.getShare().getString("db_port", "3306"));
+                                json.put("db_name", global.getShare().getString("db_name", "gserver"));
+                                json.put("db_user", global.getShare().getString("db_user", "root"));
+                                json.put("db_pass", global.getShare().getString("db_pass", "123456"));
+                                String jmstr = global.xdxn(json.toString());//异或运算加密
+                                // jmstr = new String(Base64.encodeBase64(jmstr.getBytes()));//base64加密
+                                jmstr = global.str2HexStr(jmstr);
+                                jmstr  = "C" + (new Random().nextInt(5000)+ 1000)+ jmstr;
+                                edit_qx_my.setText(jmstr);
+                            }
+                            catch (JSONException e)
+                            {}
+                        }
+                    });
+                setView(qx_view, "秘钥生成", "拿去浪吧～");
                 break;
             case 2:
                 //加载布局
@@ -143,7 +262,10 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                         @Override
                         public void onClick(View p1)
                         { 
-                            mUpdatePassWorld(Integer.parseInt(list_data.get(id).get("account_id").toString()), edit_gm_passwd.getText().toString().trim(), edit_gm_key.getText().toString().trim());
+                            if (edit_gm_passwd.getText().toString().trim().length() > 1 && edit_gm_key.getText().toString().trim().length() > 1)
+                            {
+                                mUpdatePassWorld(Integer.parseInt(list_data.get(id).get("account_id").toString()), edit_gm_passwd.getText().toString().trim(), edit_gm_key.getText().toString().trim());
+                            }
                         }
                     });
                 setView(gm_view, "修改密码(所属账号密码)", "别又忘记了～");
@@ -152,13 +274,13 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 //加载布局
                 LinearLayout fh_view = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.fh_user, null);
                 TextView text_fh_zt = (TextView) fh_view.findViewById(R.id.text_fh_zt);
-                text_fh_zt.setText(Integer.parseInt(list_data.get(id).get("deleted").toString()) ==0 ? "正常":"已封号");
+                text_fh_zt.setText(Integer.parseInt(list_data.get(id).get("deleted").toString()) == 0 ? "正常": "已封号");
                 Button btn_fh_on = (Button) fh_view.findViewById(R.id.btn_fh_on);
                 btn_fh_on.setOnClickListener(new View.OnClickListener(){
                         @Override
                         public void onClick(View p1)
                         { //封号
-                            mUpdateDeleted(Integer.parseInt(list_data.get(id).get("account_id").toString()),1);
+                            mUpdateDeleted(Integer.parseInt(list_data.get(id).get("id").toString()), 1);
                         }
                     });
                 Button btn_fh_off = (Button) fh_view.findViewById(R.id.btn_fh_off);
@@ -166,7 +288,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                         @Override
                         public void onClick(View p1)
                         { //解封
-                            mUpdateDeleted(Integer.parseInt(list_data.get(id).get("account_id").toString()),0);
+                            mUpdateDeleted(Integer.parseInt(list_data.get(id).get("id").toString()), 0);
                         }
                     });
                 setView(fh_view, "角色封停（只封人物角色）", "再看看还有谁做了坏事～");
@@ -188,7 +310,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                             {
                                 if (Integer.parseInt(edit_sc_code.getText().toString()) == code)
                                 {
-                                    mDeleteUserData(Integer.parseInt(list_data.get(id).get("account_id").toString()), false);
+                                    mDeleteUserData(Integer.parseInt(list_data.get(id).get("account_id").toString()), Integer.parseInt(list_data.get(id).get("id").toString()), false);
                                 }
                                 else
                                 {
@@ -208,7 +330,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                             {
                                 if (Integer.parseInt(edit_sc_code.getText().toString()) == code)
                                 {
-                                    mDeleteUserData(Integer.parseInt(list_data.get(id).get("account_id").toString()), true);
+                                    mDeleteUserData(Integer.parseInt(list_data.get(id).get("account_id").toString()), Integer.parseInt(list_data.get(id).get("id").toString()), true);
                                 }
                                 else
                                 {
@@ -255,7 +377,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 }).start();
         }
     }
-    
+
     public void  mUpdateDeleted(final int id, final int deleted)
     {//封号  1封、0不封
         if (falg = global.getMysqlStatus())
@@ -266,15 +388,15 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                     {
                         try
                         {
-                            String fh_sql = "UPDATE `characters` SET `deleted` = '" + deleted + "' WHERE `characters`.`account_id` =" + id;
+                            String fh_sql = "UPDATE `characters` SET `deleted` = '" + deleted + "' WHERE `characters`.`id` =" + id;
                             int result = global.getStmt().executeUpdate(fh_sql);
                             if (result > 0)
                             {
-                                global.sendBroadMsg(3, "MSG", deleted == 1 ? "封号成功！":"解封成功！", false);
+                                global.sendBroadMsg(3, "MSG", deleted == 1 ? "封号成功！": "解封成功！", false);
                             }
                             else
                             {
-                                global.sendBroadMsg(3, "MSG", deleted == 1 ? "封号失败！":"解封失败！", false);
+                                global.sendBroadMsg(3, "MSG", deleted == 1 ? "封号失败！": "解封失败！", false);
                             }
                         }
                         catch (Exception e)
@@ -286,7 +408,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         }
     }
 
-    public void mDeleteUserData(final int account_id, final boolean all)
+    public void mDeleteUserData(final int account_id, final int id, final boolean all)
     {// 删除账号
         if (falg = global.getMysqlStatus())
         {
@@ -296,8 +418,8 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                     {
                         try
                         {
-                            String[] sql_dq = {"DELETE FROM `characters` WHERE `characters`.`account_id` =" + account_id};
-                            String[] sql_all = {"DELETE FROM `accounts` WHERE `accounts`.`id` =" + account_id, "DELETE FROM `characters` WHERE `characters`.`account_id` =" + account_id};
+                            String[] sql_dq = {"DELETE FROM `characters` WHERE `characters`.`id` =" + id};
+                            String[] sql_all = {"DELETE FROM `accounts` WHERE `accounts`.`id` =" + account_id, "DELETE FROM `characters` WHERE `characters`.`id` =" + id};
                             for (String sql : all ? sql_all : sql_dq)
                             {
                                 int result = global.getStmt().executeUpdate(sql);
@@ -366,7 +488,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     public void setView(View view, String title, final String msg)
     {// 设置view
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(uname + "：" +title);
+        builder.setTitle(uname + "：" + title);
         builder.setView(view);
         builder.setCancelable(false);
         builder.setPositiveButton("返回",
@@ -406,14 +528,34 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                                 {
                                     map.put("image", R.drawable.offline); //离线
                                 }
-                                map.put("user", rs.getString("name")); //游戏名称
-                                map.put("regtime", rs.getString("add_time"));//创建时间
-                                map.put("account_id", rs.getInt("account_id"));//用户ID
-                                map.put("data", rs.getString("data"));//人物json数据
-                                map.put("update_time", update_time);//最近登陆时间
-                                map.put("deleted", rs.getString("deleted"));//封号
-                                list_data.add(map);
+                                if (global.isKey())
+                                {
+                                    JSONObject json = new JSONObject(global.getQXJSON());
+                                    if ((rs.getString("name")).equals(json.getString("user_name")))
+                                    {
+                                        map.put("user", rs.getString("name")); //游戏名称
+                                        map.put("regtime", rs.getString("add_time"));//创建时间
+                                        map.put("account_id", rs.getInt("account_id"));//用户ID
+                                        map.put("id", rs.getInt("id"));//当前角色ID
+                                        map.put("data", rs.getString("data"));//人物json数据
+                                        map.put("update_time", update_time);//最近登陆时间
+                                        map.put("deleted", rs.getString("deleted"));//封号
+                                        list_data.add(map);
+                                        global.sendBroadMsg(3, "MSG", "使用秘钥登录！", false);
+                                    }
+                                }
+                                else
+                                {
+                                    map.put("user", rs.getString("name")); //游戏名称
+                                    map.put("regtime", rs.getString("add_time"));//创建时间
+                                    map.put("account_id", rs.getInt("account_id"));//用户ID
+                                    map.put("id", rs.getInt("id"));//当前角色ID
+                                    map.put("data", rs.getString("data"));//人物json数据
+                                    map.put("update_time", update_time);//最近登陆时间
+                                    map.put("deleted", rs.getString("deleted"));//封号
 
+                                    list_data.add(map);
+                                }
                                 Collections.sort(list_data, new Comparator<Map<String, Object>>() {
 
                                         @Override
@@ -444,7 +586,6 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 }).start();
         }
     }
-
 
     @Override
     public void onDestroy()

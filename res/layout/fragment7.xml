@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="调试日志"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:gravity="center"/>
+
+	<EditText
+		android:id="@+id/edit_jjm"
+		android:background="@drawable/edit_border_shape"
+		android:layout_width="match_parent"
+		android:layout_height="90dp"
+		android:layout_marginTop="5dp"
+		android:inputType="textMultiLine"
+		android:ems="10"
+		android:gravity="top|left|center"
+		android:hint="明文"/>
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:paddingTop="5dp">
+
+		<Button
+			android:background="@drawable/edit_border_shape"
+			android:layout_width="90dp"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="35dp"
+			android:text="加解密"
+			android:id="@+id/btn_jjm"/>
+
+		<Button
+			android:background="@drawable/edit_border_shape"
+			android:layout_width="90dp"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="35dp"
+			android:layout_marginStart="6dp"
+			android:text="Base64加密"
+			android:id="@+id/btn_64jm"/>
+
+		<Button
+			android:background="@drawable/edit_border_shape"
+			android:layout_width="90dp"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="35dp"
+			android:text="Base64解密"
+			android:id="@+id/btn_64_jiem"
+			android:layout_marginStart="6dp"/>
+
+		<Button
+			android:background="@drawable/edit_border_shape"
+			android:layout_width="90dp"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="35dp"
+			android:text="上下交换"
+			android:layout_marginStart="6dp"
+			android:id="@+id/btn_jh"/>
+
+	</LinearLayout>
+
+	<EditText
+		android:id="@+id/tv1"
+		android:background="@drawable/edit_border_shape"
+		android:layout_width="match_parent"
+		android:layout_height="100dp"
+		android:layout_marginTop="15dp"
+		android:inputType="textMultiLine"
+		android:ems="10"
+		android:gravity="top|left|center"
+		android:hint="异或运算 Base64 加解密"/>
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:layout_marginTop="10dp">
+
+		<Button
+			android:background="@drawable/edit_border_shape"
+			android:layout_width="90dp"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="35dp"
+			android:layout_marginStart="6dp"
+			android:text="十六进制 加密"
+			android:id="@+id/btn_32jm"/>
+
+		<Button
+			android:background="@drawable/edit_border_shape"
+			android:layout_width="90dp"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="35dp"
+			android:layout_marginStart="6dp"
+			android:text="十六进制 解密"
+			android:id="@+id/btn_32jiem"/>
+
+	</LinearLayout>
+
+	<EditText
+		android:id="@+id/tv2"
+		android:background="@drawable/edit_border_shape"
+		android:layout_width="match_parent"
+		android:layout_height="100dp"
+		android:layout_marginTop="15dp"
+		android:inputType="textMultiLine"
+		android:ems="10"
+		android:gravity="top|left|center"
+		android:hint="十六进制 加解密"/>
+
+</LinearLayout>
+

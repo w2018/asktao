@@ -13,6 +13,7 @@ import java.text.*;
 
 import com.mysql.jdbc.Connection;
 import java.sql.Statement;
+import org.json.*;
 
 public class GlobalVariable extends Application
 {
@@ -32,7 +33,8 @@ public class GlobalVariable extends Application
     //应用类
     private Context context;
     private boolean falg = false;
-
+    private boolean iskey = false;
+    private String qx_json = null;
     @Override
     public void onCreate()
     {
@@ -123,7 +125,17 @@ public class GlobalVariable extends Application
         return this.allowArr;
     }
 
-    public void ConnectionMysql(final String host, final String port, final String dbname, final String user, final String pass)
+    public boolean isKey()
+    {// 是否秘钥登陆
+        return this.iskey;
+    }
+    
+    public String getQXJSON()
+    {
+        return this.qx_json;
+    }
+    
+    public void ConnectionMysql(final String host, final String port, final String dbname, final String user, final String pass, final String key, final boolean is_key)
     {// 数据库连接（线程中操作网络）
 
         new Thread(new Runnable() {
@@ -132,15 +144,30 @@ public class GlobalVariable extends Application
                 {
                     try
                     {
-                        String dburl = "jdbc:mysql://" + host + ":" + port + "/" + dbname;
-                        Class.forName("com.mysql.jdbc.Driver");
-                        conn = (Connection) DriverManager.getConnection(dburl, user, pass);
-                        share.edit().putString("db_host", host).commit();
-                        share.edit().putString("db_port", port).commit();
-                        share.edit().putString("db_name", dbname).commit();
-                        share.edit().putString("db_user", user).commit();
-                        share.edit().putString("db_pass", pass).commit();
-                        share.edit().apply();
+                        if (is_key)
+                        {
+                            qx_json = xdxn(hexStr2Str(key));
+                            JSONObject json = new JSONObject(qx_json);
+                            iskey = is_key;
+                            String dburl = "jdbc:mysql://" + json.getString("db_host") + ":" + json.getString("db_port") + "/" + json.getString("db_name");
+                            Class.forName("com.mysql.jdbc.Driver");
+                            conn = (Connection) DriverManager.getConnection(dburl, json.getString("db_user"), json.getString("db_pass"));
+                            share.edit().putString("key", key).commit();
+                            share.edit().apply();
+                        }
+                        else
+                        {
+                            iskey = is_key;
+                            String dburl = "jdbc:mysql://" + host + ":" + port + "/" + dbname;
+                            Class.forName("com.mysql.jdbc.Driver");
+                            conn = (Connection) DriverManager.getConnection(dburl, user, pass);
+                            share.edit().putString("db_host", host).commit();
+                            share.edit().putString("db_port", port).commit();
+                            share.edit().putString("db_name", dbname).commit();
+                            share.edit().putString("db_user", user).commit();
+                            share.edit().putString("db_pass", pass).commit();
+                            share.edit().apply();
+                        }
                         status = true;
                         falg = true;
                         sendBroadMsg(2, "MSG", getString(R.string.string_04), true);
@@ -204,6 +231,49 @@ public class GlobalVariable extends Application
     {// 获取选中人物属性json
         return this.Jdata;
     }
+
+    public String xdxn(String str)
+    {// 字符加解密，对每个数组元素进行异或运算
+        char[] array=str.toCharArray();
+        for (int i = 0; i < array.length; i++)
+        {
+            array[i] = (char)(array[i] ^ 21992);
+        }
+        return new String(array);
+    }
+
+    public static String str2HexStr(String str)  
+    {// 字符串转换成十六进制字符串
+        char[] chars = "0123456789ABCDEF".toCharArray();    
+        StringBuilder sb = new StringBuilder("");  
+        byte[] bs = str.getBytes();    
+        int bit;    
+
+        for (int i = 0; i < bs.length; i++)  
+        {    
+            bit = (bs[i] & 0x0f0) >> 4;    
+            sb.append(chars[bit]);    
+            bit = bs[i] & 0x0f;    
+            sb.append(chars[bit]);  
+        }    
+        return sb.toString().trim();    
+    }  
+
+    public static String hexStr2Str(String hexStr)  
+    {// 十六进制转换字符串
+        String str = "0123456789ABCDEF";    
+        char[] hexs = hexStr.toCharArray();    
+        byte[] bytes = new byte[hexStr.length() / 2];    
+        int n;    
+
+        for (int i = 0; i < bytes.length; i++)  
+        {    
+            n = str.indexOf(hexs[2 * i]) * 16;    
+            n += str.indexOf(hexs[2 * i + 1]);    
+            bytes[i] = (byte) (n & 0xff);    
+        }    
+        return new String(bytes);    
+    }  
 
     class IsStatus implements Runnable
     {// 检测数据连接状态
